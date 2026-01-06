@@ -2,8 +2,11 @@
 <html lang="zh-CN">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>奶茶申请 | 闺蜜专属版</title>
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, user-scalable=no"
+    />
+    <title>奶茶申请 | 闺蜜专属版🥤</title>
     <style>
       * {
         margin: 0;
@@ -17,37 +20,47 @@
         display: flex;
         justify-content: center;
         align-items: center;
-        padding: 20px;
+        padding: 15px;
+        touch-action: manipulation; /* 解决手机端触摸延迟 */
       }
       .container {
         background: #fff;
-        padding: 40px;
+        padding: 30px 20px;
         border-radius: 20px;
         box-shadow: 0 10px 30px rgba(255, 153, 204, 0.2);
         text-align: center;
         max-width: 500px;
         width: 100%;
+        position: relative; /* 关键：作为按钮定位的父级 */
+        overflow: hidden; /* 防止按钮跑出容器 */
       }
       h1 {
         color: #ff69b4;
-        margin-bottom: 10px;
-        font-size: 28px;
-        /* 加个可爱的奶茶图标 */
+        margin-bottom: 15px;
+        font-size: 24px;
         text-shadow: 2px 2px 5px rgba(255, 105, 180, 0.3);
       }
-      h1::before {
-        content: "🥤";
-        margin-right: 10px;
+      h1 span {
+        font-size: 28px;
+        margin: 0 5px;
       }
       .reason {
         margin: 20px 0;
-        padding: 20px;
+        padding: 20px 15px;
         background: #fef7fb;
         border-radius: 15px;
-        font-size: 16px;
+        font-size: 15px;
         color: #555;
         line-height: 1.8;
         border: 1px solid #ffe6f2;
+        text-align: left;
+      }
+      .reason p {
+        margin: 8px 0;
+      }
+      .reason span {
+        color: #ff69b4;
+        font-weight: bold;
       }
       .btn-group {
         margin-top: 30px;
@@ -55,21 +68,26 @@
         justify-content: center;
         gap: 20px;
         position: relative;
+        min-height: 60px; /* 保证按钮区域高度，手机端不挤 */
       }
       button {
-        padding: 12px 30px;
+        padding: 12px 25px;
         border: none;
         border-radius: 50px;
-        font-size: 18px;
+        font-size: 17px;
         cursor: pointer;
         transition: all 0.3s ease;
+        touch-action: manipulation; /* 手机端触摸优化 */
+        -webkit-tap-highlight-color: transparent; /* 去掉手机点击高亮 */
       }
       .agree {
         background: #ff69b4;
         color: #fff;
-        min-width: 120px;
+        min-width: 110px;
+        z-index: 10; /* 保证同意按钮在最上层 */
       }
-      .agree:hover {
+      .agree:hover,
+      .agree:active {
         background: #ff4da6;
         transform: scale(1.05);
         box-shadow: 0 5px 15px rgba(255, 105, 180, 0.3);
@@ -78,16 +96,21 @@
         background: #999;
         color: #fff;
         position: absolute; /* 关键：绝对定位实现位移 */
-        min-width: 120px;
+        min-width: 110px;
+        z-index: 5;
       }
       .success {
         margin-top: 20px;
         color: #ff69b4;
-        font-size: 20px;
+        font-size: 18px;
         font-weight: bold;
         display: none;
-        /* 可爱的动效 */
         animation: bounce 0.8s ease;
+        padding: 10px 0;
+      }
+      .success span {
+        font-size: 22px;
+        margin: 0 8px;
       }
       @keyframes bounce {
         0% {
@@ -102,24 +125,40 @@
           opacity: 1;
         }
       }
+
+      /* 手机端适配 */
+      @media (max-width: 400px) {
+        .btn-group {
+          gap: 10px;
+        }
+        button {
+          padding: 10px 20px;
+          font-size: 16px;
+        }
+        .reason {
+          font-size: 14px;
+        }
+      }
     </style>
   </head>
   <body>
     <div class="container">
-      <h1>奶茶申请</h1>
+      <h1><span>🥤</span>奶茶申请<span>🥰</span></h1>
       <div class="reason">
-        最最最亲爱的闺蜜宝～<br />
-        本打工人今日份快乐已欠费😩，急需一杯奶茶续命！<br />
-        申请品类：瑞幸生椰拿铁（少少糖/热）<br />
-        申请金额：15元（闺蜜赞助版）<br />
-        申请人：你的专属小馋猫🥰<br />
-        承诺：喝到奶茶后双倍贴贴～
+        <p>最最最亲爱的闺蜜宝～💖</p>
+        <p>本打工人今日份快乐已欠费😩，急需一杯奶茶续命！</p>
+        <p>申请品类：<span>珍珠奶茶（三分糖/去冰）🧋</span></p>
+        <p>申请金额：<span>20元（闺蜜赞助版💰）</span></p>
+        <p>申请人：你的专属小馋猫🐱</p>
+        <p>承诺：喝到奶茶后双倍贴贴～抱抱+贴贴🫂</p>
       </div>
       <div class="btn-group">
-        <button class="agree">请我喝</button>
-        <button class="disagree">不请</button>
+        <button class="agree">请我喝✨</button>
+        <button class="disagree">不请🙅‍♀️</button>
       </div>
-      <div class="success">🎉 批准啦！奶茶续命成功～爱你哟～</div>
+      <div class="success">
+        <span>🎉</span>批准啦！奶茶续命成功～爱你哟～<span>💋</span>
+      </div>
     </div>
 
     <script>
@@ -128,33 +167,61 @@
       const agreeBtn = document.querySelector(".agree");
       const successMsg = document.querySelector(".success");
       const container = document.querySelector(".container");
+      const btnGroup = document.querySelector(".btn-group");
 
-      // 核心：鼠标靠近"不请"按钮时随机位移
-      disagreeBtn.addEventListener("mousemove", function (e) {
-        // 获取容器范围，避免按钮移出可视区
+      // 适配手机+电脑端：监听鼠标/触摸事件
+      function handleBtnMove(e) {
+        // 获取按钮组范围（更精准，适配手机）
+        const btnGroupRect = btnGroup.getBoundingClientRect();
         const containerRect = container.getBoundingClientRect();
         const btnWidth = disagreeBtn.offsetWidth;
         const btnHeight = disagreeBtn.offsetHeight;
 
-        // 随机生成新位置（限定在容器内）
-        const randomX =
-          Math.floor(Math.random() * (containerRect.width - btnWidth - 40)) +
-          20;
-        const randomY =
-          Math.floor(Math.random() * (containerRect.height - btnHeight - 180)) +
-          100;
+        // 计算可用区域，避免按钮跑出可视区（手机端优化）
+        const maxX = btnGroupRect.right - btnWidth - 20;
+        const minX = btnGroupRect.left + 20;
+        const maxY = btnGroupRect.bottom - btnHeight - 10;
+        const minY = btnGroupRect.top + 10;
 
-        // 设置新位置
-        disagreeBtn.style.left = randomX + "px";
-        disagreeBtn.style.top = randomY + "px";
+        // 随机生成新位置（限定在可用区域）
+        const randomX = Math.floor(Math.random() * (maxX - minX)) + minX;
+        const randomY = Math.floor(Math.random() * (maxY - minY)) + minY;
+
+        // 转换为相对按钮组的定位（手机端更稳定）
+        const relX = randomX - btnGroupRect.left;
+        const relY = randomY - btnGroupRect.top;
+
+        // 设置新位置（用px，适配所有设备）
+        disagreeBtn.style.left = relX + "px";
+        disagreeBtn.style.top = relY + "px";
+      }
+
+      // 电脑端：鼠标靠近
+      disagreeBtn.addEventListener("mousemove", handleBtnMove);
+      // 手机端：触摸靠近/点击（解决无互动问题）
+      disagreeBtn.addEventListener("touchmove", handleBtnMove);
+      disagreeBtn.addEventListener("touchend", function (e) {
+        e.preventDefault(); // 阻止默认触摸行为
+        handleBtnMove(e);
       });
 
-      // 点击"请我喝"按钮显示成功提示
+      // 点击"请我喝"按钮显示成功提示（适配手机点击）
       agreeBtn.addEventListener("click", function () {
         successMsg.style.display = "block";
         // 禁用按钮，防止重复点击
         agreeBtn.disabled = true;
         disagreeBtn.disabled = true;
+      });
+      // 手机端触摸"请我喝"按钮
+      agreeBtn.addEventListener("touchend", function (e) {
+        e.preventDefault();
+        this.click();
+      });
+
+      // 初始化：给"不请"按钮设置初始位置
+      window.addEventListener("load", function () {
+        disagreeBtn.style.left = "150px"; // 初始在同意按钮右侧
+        disagreeBtn.style.top = "0px";
       });
     </script>
   </body>
