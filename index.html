@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>奶茶申请 | 闺蜜专属版</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: "微软雅黑", sans-serif;
+      }
+      body {
+        background: linear-gradient(120deg, #ffe0f0, #e0f5ff);
+        min-height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 20px;
+      }
+      .container {
+        background: #fff;
+        padding: 40px;
+        border-radius: 20px;
+        box-shadow: 0 10px 30px rgba(255, 153, 204, 0.2);
+        text-align: center;
+        max-width: 500px;
+        width: 100%;
+      }
+      h1 {
+        color: #ff69b4;
+        margin-bottom: 10px;
+        font-size: 28px;
+        /* 加个可爱的奶茶图标 */
+        text-shadow: 2px 2px 5px rgba(255, 105, 180, 0.3);
+      }
+      h1::before {
+        content: "🥤";
+        margin-right: 10px;
+      }
+      .reason {
+        margin: 20px 0;
+        padding: 20px;
+        background: #fef7fb;
+        border-radius: 15px;
+        font-size: 16px;
+        color: #555;
+        line-height: 1.8;
+        border: 1px solid #ffe6f2;
+      }
+      .btn-group {
+        margin-top: 30px;
+        display: flex;
+        justify-content: center;
+        gap: 20px;
+        position: relative;
+      }
+      button {
+        padding: 12px 30px;
+        border: none;
+        border-radius: 50px;
+        font-size: 18px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+      }
+      .agree {
+        background: #ff69b4;
+        color: #fff;
+        min-width: 120px;
+      }
+      .agree:hover {
+        background: #ff4da6;
+        transform: scale(1.05);
+        box-shadow: 0 5px 15px rgba(255, 105, 180, 0.3);
+      }
+      .disagree {
+        background: #999;
+        color: #fff;
+        position: absolute; /* 关键：绝对定位实现位移 */
+        min-width: 120px;
+      }
+      .success {
+        margin-top: 20px;
+        color: #ff69b4;
+        font-size: 20px;
+        font-weight: bold;
+        display: none;
+        /* 可爱的动效 */
+        animation: bounce 0.8s ease;
+      }
+      @keyframes bounce {
+        0% {
+          transform: scale(0.8);
+          opacity: 0;
+        }
+        50% {
+          transform: scale(1.1);
+        }
+        100% {
+          transform: scale(1);
+          opacity: 1;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>奶茶申请</h1>
+      <div class="reason">
+        最最最亲爱的闺蜜宝～<br />
+        本打工人今日份快乐已欠费😩，急需一杯奶茶续命！<br />
+        申请品类：瑞幸生椰拿铁（少少糖/热）<br />
+        申请金额：15元（闺蜜赞助版）<br />
+        申请人：你的专属小馋猫🥰<br />
+        承诺：喝到奶茶后双倍贴贴～
+      </div>
+      <div class="btn-group">
+        <button class="agree">请我喝</button>
+        <button class="disagree">不请</button>
+      </div>
+      <div class="success">🎉 批准啦！奶茶续命成功～爱你哟～</div>
+    </div>
+
+    <script>
+      // 获取元素
+      const disagreeBtn = document.querySelector(".disagree");
+      const agreeBtn = document.querySelector(".agree");
+      const successMsg = document.querySelector(".success");
+      const container = document.querySelector(".container");
+
+      // 核心：鼠标靠近"不请"按钮时随机位移
+      disagreeBtn.addEventListener("mousemove", function (e) {
+        // 获取容器范围，避免按钮移出可视区
+        const containerRect = container.getBoundingClientRect();
+        const btnWidth = disagreeBtn.offsetWidth;
+        const btnHeight = disagreeBtn.offsetHeight;
+
+        // 随机生成新位置（限定在容器内）
+        const randomX =
+          Math.floor(Math.random() * (containerRect.width - btnWidth - 40)) +
+          20;
+        const randomY =
+          Math.floor(Math.random() * (containerRect.height - btnHeight - 180)) +
+          100;
+
+        // 设置新位置
+        disagreeBtn.style.left = randomX + "px";
+        disagreeBtn.style.top = randomY + "px";
+      });
+
+      // 点击"请我喝"按钮显示成功提示
+      agreeBtn.addEventListener("click", function () {
+        successMsg.style.display = "block";
+        // 禁用按钮，防止重复点击
+        agreeBtn.disabled = true;
+        disagreeBtn.disabled = true;
+      });
+    </script>
+  </body>
+</html>
