@@ -168,7 +168,8 @@
       const successMsg = document.querySelector(".success");
 
       // 平滑移动样式
-      disagreeBtn.style.transition = "left 0.6s cubic-bezier(.2,.9,.3,1), top 0.6s cubic-bezier(.2,.9,.3,1)";
+      disagreeBtn.style.transition =
+        "left 0.6s cubic-bezier(.2,.9,.3,1), top 0.6s cubic-bezier(.2,.9,.3,1)";
 
       // 生成不与同意按钮重叠的位置（尝试若干次）
       function randomPositionAvoidAgree() {
@@ -261,8 +262,16 @@
         // 初始放在屏幕中间偏右位置
         const initX = Math.floor(window.innerWidth * 0.6);
         const initY = Math.floor(window.innerHeight * 0.2);
-        disagreeBtn.style.left = Math.min(initX, Math.max(10, window.innerWidth - disagreeBtn.offsetWidth - 10)) + "px";
-        disagreeBtn.style.top = Math.min(initY, Math.max(10, window.innerHeight - disagreeBtn.offsetHeight - 10)) + "px";
+        disagreeBtn.style.left =
+          Math.min(
+            initX,
+            Math.max(10, window.innerWidth - disagreeBtn.offsetWidth - 10)
+          ) + "px";
+        disagreeBtn.style.top =
+          Math.min(
+            initY,
+            Math.max(10, window.innerHeight - disagreeBtn.offsetHeight - 10)
+          ) + "px";
         startRoam();
       });
 
