@@ -95,9 +95,10 @@
       .disagree {
         background: #999;
         color: #fff;
-        position: absolute; /* 关键：绝对定位实现位移 */
+        position: fixed; /* 改为 fixed，允许满屏移动 */
         min-width: 110px;
-        z-index: 5;
+        z-index: 20; /* 保证不被同意按钮覆盖 */
+        touch-action: manipulation;
       }
       .success {
         margin-top: 20px;
@@ -162,66 +163,115 @@
     </div>
 
     <script>
-      // 获取元素
       const disagreeBtn = document.querySelector(".disagree");
       const agreeBtn = document.querySelector(".agree");
       const successMsg = document.querySelector(".success");
-      const container = document.querySelector(".container");
-      const btnGroup = document.querySelector(".btn-group");
 
-      // 适配手机+电脑端：监听鼠标/触摸事件
-      function handleBtnMove(e) {
-        // 获取按钮组范围（更精准，适配手机）
-        const btnGroupRect = btnGroup.getBoundingClientRect();
-        const containerRect = container.getBoundingClientRect();
-        const btnWidth = disagreeBtn.offsetWidth;
-        const btnHeight = disagreeBtn.offsetHeight;
+      // 平滑移动样式
+      disagreeBtn.style.transition = "left 0.6s cubic-bezier(.2,.9,.3,1), top 0.6s cubic-bezier(.2,.9,.3,1)";
 
-        // 计算可用区域，避免按钮跑出可视区（手机端优化）
-        const maxX = btnGroupRect.right - btnWidth - 20;
-        const minX = btnGroupRect.left + 20;
-        const maxY = btnGroupRect.bottom - btnHeight - 10;
-        const minY = btnGroupRect.top + 10;
+      // 生成不与同意按钮重叠的位置（尝试若干次）
+      function randomPositionAvoidAgree() {
+        const padding = 10;
+        const btnW = disagreeBtn.offsetWidth;
+        const btnH = disagreeBtn.offsetHeight;
+        const maxX = Math.max(0, window.innerWidth - btnW - padding);
+        const maxY = Math.max(0, window.innerHeight - btnH - padding);
 
-        // 随机生成新位置（限定在可用区域）
-        const randomX = Math.floor(Math.random() * (maxX - minX)) + minX;
-        const randomY = Math.floor(Math.random() * (maxY - minY)) + minY;
+        const agreeRect = agreeBtn.getBoundingClientRect();
 
-        // 转换为相对按钮组的定位（手机端更稳定）
-        const relX = randomX - btnGroupRect.left;
-        const relY = randomY - btnGroupRect.top;
+        let attempts = 0;
+        while (attempts < 60) {
+          const x = Math.floor(Math.random() * (maxX - padding + 1)) + padding;
+          const y = Math.floor(Math.random() * (maxY - padding + 1)) + padding;
 
-        // 设置新位置（用px，适配所有设备）
-        disagreeBtn.style.left = relX + "px";
-        disagreeBtn.style.top = relY + "px";
+          const rect = { left: x, top: y, right: x + btnW, bottom: y + btnH };
+
+          const overlap = !(
+            rect.right < agreeRect.left ||
+            rect.left > agreeRect.right ||
+            rect.bottom < agreeRect.top ||
+            rect.top > agreeRect.bottom
+          );
+
+          if (!overlap) return { x, y };
+          attempts++;
+        }
+
+        // 若多次尝试仍失败，则返回任意位置并保证在视口内
+        return {
+          x: Math.floor(Math.random() * (maxX - padding + 1)) + padding,
+          y: Math.floor(Math.random() * (maxY - padding + 1)) + padding,
+        };
       }
 
-      // 电脑端：鼠标靠近
-      disagreeBtn.addEventListener("mousemove", handleBtnMove);
-      // 手机端：触摸靠近/点击（解决无互动问题）
-      disagreeBtn.addEventListener("touchmove", handleBtnMove);
-      disagreeBtn.addEventListener("touchend", function (e) {
-        e.preventDefault(); // 阻止默认触摸行为
-        handleBtnMove(e);
-      });
+      // 周期性移动到新位置
+      let roamInterval = null;
+      function startRoam() {
+        if (roamInterval) return;
+        // 立刻移动一次
+        const p = randomPositionAvoidAgree();
+        disagreeBtn.style.left = p.x + "px";
+        disagreeBtn.style.top = p.y + "px";
 
-      // 点击"请我喝"按钮显示成功提示（适配手机点击）
+        roamInterval = setInterval(() => {
+          const p = randomPositionAvoidAgree();
+          disagreeBtn.style.left = p.x + "px";
+          disagreeBtn.style.top = p.y + "px";
+        }, 800);
+      }
+
+      function stopRoam() {
+        if (roamInterval) {
+          clearInterval(roamInterval);
+          roamInterval = null;
+        }
+      }
+
+      // 点击"请我喝"按钮显示成功提示
       agreeBtn.addEventListener("click", function () {
         successMsg.style.display = "block";
-        // 禁用按钮，防止重复点击
         agreeBtn.disabled = true;
-        disagreeBtn.disabled = true;
+        stopRoam();
       });
-      // 手机端触摸"请我喝"按钮
       agreeBtn.addEventListener("touchend", function (e) {
         e.preventDefault();
         this.click();
       });
 
-      // 初始化：给"不请"按钮设置初始位置
-      window.addEventListener("load", function () {
-        disagreeBtn.style.left = "150px"; // 初始在同意按钮右侧
-        disagreeBtn.style.top = "0px";
+      // 交互：当用户靠近或触摸“不请”按钮时，短暂加速移动
+      disagreeBtn.addEventListener("mouseenter", () => {
+        stopRoam();
+        const p = randomPositionAvoidAgree();
+        disagreeBtn.style.left = p.x + "px";
+        disagreeBtn.style.top = p.y + "px";
+        setTimeout(startRoam, 400);
+      });
+      disagreeBtn.addEventListener("touchstart", (e) => {
+        e.preventDefault();
+        stopRoam();
+        const p = randomPositionAvoidAgree();
+        disagreeBtn.style.left = p.x + "px";
+        disagreeBtn.style.top = p.y + "px";
+        setTimeout(startRoam, 400);
+      });
+
+      // 初始位置并启动漫游
+      window.addEventListener("load", () => {
+        // 初始放在屏幕中间偏右位置
+        const initX = Math.floor(window.innerWidth * 0.6);
+        const initY = Math.floor(window.innerHeight * 0.2);
+        disagreeBtn.style.left = Math.min(initX, Math.max(10, window.innerWidth - disagreeBtn.offsetWidth - 10)) + "px";
+        disagreeBtn.style.top = Math.min(initY, Math.max(10, window.innerHeight - disagreeBtn.offsetHeight - 10)) + "px";
+        startRoam();
+      });
+
+      // 窗口大小变化时调整位置
+      window.addEventListener("resize", () => {
+        // 立即修正位置，确保仍在视口内且不与同意按钮重叠
+        const p = randomPositionAvoidAgree();
+        disagreeBtn.style.left = p.x + "px";
+        disagreeBtn.style.top = p.y + "px";
       });
     </script>
   </body>
